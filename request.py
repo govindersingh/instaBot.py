@@ -5,7 +5,7 @@ ACCESS_TOKEN= '2107825401.8e9fcea.494a7a948b6f4182b4564cb74ee4c9ad'
 BASE_URL= 'https://api.instagram.com/v1/'
 
 #print self profile photo.........................................
-
+#https://api.instagram.com/v1/users/self/?access_token=ACCESS-TOKEN
 def self_profile():
     url =(BASE_URL+ 'users/self/?access_token=%s') %(ACCESS_TOKEN)
     r=requests.get(url).json()
@@ -18,7 +18,7 @@ def self_profile():
         return "you have entered wrong value"
 
 #get self information...........................................
-
+#https://api.instagram.com/v1/users/self/?access_token=ACCESS-TOKEN
 def get_self_info():
     url =(BASE_URL+ 'users/self/?access_token=%s') %(ACCESS_TOKEN)
     print "request url is : %s" %(url)
@@ -35,7 +35,7 @@ def get_self_info():
         print 'Status code other than 200 received!'
 
 #Id of user using username...................................
-
+#https://api.instagram.com/v1/users/search?q=jack&access_token=ACCESS-TOKEN
 def get_user_id(insta_username):
     url= BASE_URL+"users/search?q=%s&access_token=%s" %(insta_username , ACCESS_TOKEN)
     print 'GET request url is : %s' %(url)
@@ -51,9 +51,8 @@ def get_user_id(insta_username):
         print 'status code other then 200 received'
 
 # getting info of user by using username.......................................
-
+## https://api.instagram.com/v1/users/{user-id}/?access_token=ACCESS-TOKEN
 def get_user_info(insta_username):
-    # https://api.instagram.com/v1/users/{user-id}/?access_token=ACCESS-TOKEN
     user_id=get_user_id(insta_username)
     if user_id==None:
         print 'user does not exist'
@@ -92,13 +91,14 @@ def get_own_post():
         print "status code other than 200 received"
 
 #get the recent post of a user by username....................................
-
+#https://api.instagram.com/v1/users/{user-id}/media/recent/?access_token=ACCESS-TOKEN
 def get_user_post(insta_username):
     user_post=get_user_id(insta_username)
     if user_post==None:
         print "user does not exist"
         exit()
     url=BASE_URL+"users/%s/media/recent/?access_token=%s"%(user_post,ACCESS_TOKEN)
+    print "get request url :%s" %(url)
     r=requests.get(url).json()
 
     if r['meta']['code']==200:
@@ -111,4 +111,5 @@ def get_user_post(insta_username):
             print "post does not exist"
     else:
         print "status code other than 200 received"
-print get_user_post("just_rawat")
+
+
