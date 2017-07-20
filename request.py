@@ -112,4 +112,23 @@ def get_user_post(insta_username):
     else:
         print "status code other than 200 received"
 
+#ID of our own post..................................................
+#https://api.instagram.com/v1/users/self/media/recent/?access_token=ACCESS-TOKEN
+def get_self_post_id():
+    url = (BASE_URL + 'users/self/media/recent/?access_token=%s') % (ACCESS_TOKEN)
+    print 'GET request url : %s' % (url)
+    own_media = requests.get(url).json()
 
+    if own_media['meta']['code'] == 200:
+        if len(own_media['data']):
+            return own_media['data'][0]['id']
+            image_url = own_media['data'][0]['images']['standard_resolution']['url']
+            urllib.urlretrieve(image_url, image_name)
+            print 'Your image has been downloaded!'
+        else:
+            print 'There is no recent post of the user!'
+            exit()
+    else:
+        print 'Status code other than 200 received!'
+
+print get_self_post_id()
