@@ -95,5 +95,5 @@ def get_own_post():
 
 def get_user_post(insta_username):
     user_post=get_user_id(insta_username)
-    url=BASE_URL+""%(user_post,ACCESS_TOKEN)
+    url=BASE_URL+" "%(user_post,ACCESS_TOKEN)
 
