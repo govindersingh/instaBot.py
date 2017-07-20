@@ -91,9 +91,24 @@ def get_own_post():
     else:
         print "status code other than 200 received"
 
-#getting user poet.....................................................
+#get the recent post of a user by username....................................
 
 def get_user_post(insta_username):
     user_post=get_user_id(insta_username)
-    url=BASE_URL+" "%(user_post,ACCESS_TOKEN)
+    if user_post==None:
+        print "user does not exist"
+        exit()
+    url=BASE_URL+"users/%s/media/recent/?access_token=%s"%(user_post,ACCESS_TOKEN)
+    r=requests.get(url).json()
 
+    if r['meta']['code']==200:
+        if len(r['data']):
+            image_name = r['data'][0]['id'] + '.jpeg'
+            image_url = r['data'][0]['images']['standard_resolution']['url']
+            urllib.urlretrieve(image_url, image_name)
+            print 'Your image has been downloaded!'
+        else:
+            print "post does not exist"
+    else:
+        print "status code other than 200 received"
+print get_user_post("just_rawat")
