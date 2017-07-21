@@ -1,5 +1,7 @@
 import requests
 import urllib
+import textblob
+
 
 ACCESS_TOKEN= '2107825401.8e9fcea.494a7a948b6f4182b4564cb74ee4c9ad'
 BASE_URL= 'https://api.instagram.com/v1/'
@@ -112,28 +114,28 @@ def get_user_post(insta_username):
     else:
         print "status code other than 200 received"
 
-# ID of recent post of user using username
+# ID of recent post of user using username.....................
 
-    def get_post_id(insta_username):
-        user_id = get_user_id(insta_username)
-        if user_id == None:
-            print 'User does not exist!'
-            exit()
-        request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, ACCESS_TOKEN)
-        print 'GET request url : %s' % (request_url)
-        user_media = requests.get(request_url).json()
+def get_post_id(insta_username):
+    user_id = get_user_id(insta_username)
+    if user_id == None:
+        print 'User does not exist!'
+        exit()
+    request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, ACCESS_TOKEN)
+    print 'GET request url : %s' % (request_url)
+    user_media = requests.get(request_url).json()
 
-        if user_media['meta']['code'] == 200:
-            if len(user_media['data']):
-                return user_media['data'][0]['id']
-                image_url = user_media['data'][0]['images']['standard_resolution']['url']
-                urllib.urlretrieve(image_url, image_name)
-                print 'Your image has been downloaded!'
-            else:
-                print 'There is no recent post of the user!'
-                exit()
+    if user_media['meta']['code'] == 200:
+        if len(user_media['data']):
+            return user_media['data'][0]['id']
+            image_url = user_media['data'][0]['images']['standard_resolution']['url']
+            urllib.urlretrieve(image_url, image_name)
+            print 'Your image has been downloaded!'
         else:
-            print 'Status code other than 200 received!'
+            print 'There is no recent post of the user!'
+            exit()
+    else:
+        print 'Status code other than 200 received!'
 
 #ID of our own post..................................................
 #https://api.instagram.com/v1/users/self/media/recent/?access_token=ACCESS-TOKEN
@@ -144,8 +146,8 @@ def get_own_post():
 
     if r['meta']['code'] == 200:
         if len(r['data']):
-            return r['data'][1]['id']
-            image_url = r['data'][1]['images']['standard_resolution']['url']
+            return r['data'][0]['id']
+            image_url = r['data'][0]['images']['standard_resolution']['url']
             urllib.urlretrieve(image_url, image_name)
             print 'Your image has been downloaded!'
         else:
@@ -155,7 +157,9 @@ def get_own_post():
         print 'Status code other than 200 received!'
 
 
-#liking own post
+#liking own post....................................................
+#curl -F 'access_token=ACCESS-TOKEN' \
+    #https://api.instagram.com/v1/media/{media-id}/likes
 def like_own_post():
     media_id = get_own_post()
     url = (BASE_URL + 'media/%s/likes') % (media_id)
@@ -166,4 +170,34 @@ def like_own_post():
         print 'Like was successful!'
     else:
         print 'Your like was unsuccessful. Try again!'
-print like_own_post()
+
+
+#like recent postof user..............................
+
+def like_user_post(insta_username):
+    get_post_id(insta_username)
+    media_id = get_post_id(insta_username)
+    url = (BASE_URL + 'media/%s/likes') % (media_id)
+    payload = {"access_token": ACCESS_TOKEN}
+    print 'POST request url : %s' % (url)
+    r = requests.post(url, payload).json()
+    if r['meta']['code'] == 200:
+        print 'Like was successful!'
+    else:
+        print 'Your like was unsuccessful. Try again!'
+
+#comment on own post...............................................
+def post_own_comment():
+    media_id = get_own_post()
+    comment = raw_input("123")
+    payload = {"access_token": ACCESS_TOKEN, "text": comment}
+    url = (BASE_URL + 'media/%s/comments') % (media_id)
+    print 'POST request url : %s' % (url)
+
+    make_comment = requests.post(url, payload).json()
+
+    if make_comment['meta']['code'] == 200:
+        print "Successfully added a new comment!"
+    else:
+        print "Unable to add comment. Try again!"
+print post_own_comment()
