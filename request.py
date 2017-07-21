@@ -114,8 +114,8 @@ def get_user_post(insta_username):
     else:
         print "status code other than 200 received"
 
-# ID of recent post of user using username.....................
-
+#ID of recent post of user using username.....................
+#https://api.instagram.com/v1/users/{user-id}/media/recent/?access_token=ACCESS-TOKEN
 def get_post_id(insta_username):
     user_id = get_user_id(insta_username)
     if user_id == None:
@@ -173,7 +173,8 @@ def like_own_post():
 
 
 #like recent postof user..............................
-
+#curl -F 'access_token=ACCESS-TOKEN' \
+    #https://api.instagram.com/v1/media/{media-id}/likes
 def like_user_post(insta_username):
     get_post_id(insta_username)
     media_id = get_post_id(insta_username)
@@ -186,18 +187,29 @@ def like_user_post(insta_username):
     else:
         print 'Your like was unsuccessful. Try again!'
 
-#comment on own post...............................................
+#post comment on own post...............................................
+#curl -F 'access_token=ACCESS-TOKEN' \
+     #-F 'text=This+is+my+comment' \
+     #https://api.instagram.com/v1/media/{media-id}/comments
 def post_own_comment():
     media_id = get_own_post()
-    comment = raw_input("123")
+    comment = raw_input("")
     payload = {"access_token": ACCESS_TOKEN, "text": comment}
     url = (BASE_URL + 'media/%s/comments') % (media_id)
     print 'POST request url : %s' % (url)
 
     make_comment = requests.post(url, payload).json()
-
+    print make_comment
     if make_comment['meta']['code'] == 200:
         print "Successfully added a new comment!"
     else:
         print "Unable to add comment. Try again!"
-print post_own_comment()
+
+post_own_comment()
+#post comment on user post.............................................
+#curl -F 'access_token=ACCESS-TOKEN' \
+     #-F 'text=This+is+my+comment' \
+     #https://api.instagram.com/v1/media/{media-id}/comments
+
+
+
