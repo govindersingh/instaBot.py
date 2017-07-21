@@ -112,17 +112,40 @@ def get_user_post(insta_username):
     else:
         print "status code other than 200 received"
 
+# ID of recent post of user using username
+
+    def get_post_id(insta_username):
+        user_id = get_user_id(insta_username)
+        if user_id == None:
+            print 'User does not exist!'
+            exit()
+        request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, ACCESS_TOKEN)
+        print 'GET request url : %s' % (request_url)
+        user_media = requests.get(request_url).json()
+
+        if user_media['meta']['code'] == 200:
+            if len(user_media['data']):
+                return user_media['data'][0]['id']
+                image_url = user_media['data'][0]['images']['standard_resolution']['url']
+                urllib.urlretrieve(image_url, image_name)
+                print 'Your image has been downloaded!'
+            else:
+                print 'There is no recent post of the user!'
+                exit()
+        else:
+            print 'Status code other than 200 received!'
+
 #ID of our own post..................................................
 #https://api.instagram.com/v1/users/self/media/recent/?access_token=ACCESS-TOKEN
-def get_self_post_id():
+def get_own_post():
     url = (BASE_URL + 'users/self/media/recent/?access_token=%s') % (ACCESS_TOKEN)
     print 'GET request url : %s' % (url)
-    own_media = requests.get(url).json()
+    r = requests.get(url).json()
 
-    if own_media['meta']['code'] == 200:
-        if len(own_media['data']):
-            return own_media['data'][0]['id']
-            image_url = own_media['data'][0]['images']['standard_resolution']['url']
+    if r['meta']['code'] == 200:
+        if len(r['data']):
+            return r['data'][1]['id']
+            image_url = r['data'][1]['images']['standard_resolution']['url']
             urllib.urlretrieve(image_url, image_name)
             print 'Your image has been downloaded!'
         else:
@@ -131,4 +154,16 @@ def get_self_post_id():
     else:
         print 'Status code other than 200 received!'
 
-print get_self_post_id()
+
+#liking own post
+def like_own_post():
+    media_id = get_own_post()
+    url = (BASE_URL + 'media/%s/likes') % (media_id)
+    payload = {"access_token": ACCESS_TOKEN}
+    print 'POST request url : %s' % (url)
+    r= requests.post(url, payload).json()
+    if r['meta']['code'] == 200:
+        print 'Like was successful!'
+    else:
+        print 'Your like was unsuccessful. Try again!'
+print like_own_post()
