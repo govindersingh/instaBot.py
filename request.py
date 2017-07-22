@@ -187,13 +187,13 @@ def like_user_post(insta_username):
     else:
         print 'Your like was unsuccessful. Try again!'
 
-#post comment on own post...............................................
+#To comment on own post...............................................
 #curl -F 'access_token=ACCESS-TOKEN' \
      #-F 'text=This+is+my+comment' \
      #https://api.instagram.com/v1/media/{media-id}/comments
 def post_own_comment():
     media_id = get_own_post()
-    comment = raw_input("")
+    comment = raw_input("enter your comment : ")
     payload = {"access_token": ACCESS_TOKEN, "text": comment}
     url = (BASE_URL + 'media/%s/comments') % (media_id)
     print 'POST request url : %s' % (url)
@@ -205,11 +205,22 @@ def post_own_comment():
     else:
         print "Unable to add comment. Try again!"
 
-post_own_comment()
-#post comment on user post.............................................
+#To comment on user post.............................................
 #curl -F 'access_token=ACCESS-TOKEN' \
      #-F 'text=This+is+my+comment' \
      #https://api.instagram.com/v1/media/{media-id}/comments
+def post_a_comment(insta_username):
+    media_id = get_post_id(insta_username)
+    comment = raw_input("Your comment: ")
+    payload = {"access_token": ACCESS_TOKEN, "text": comment}
+    request_url = (BASE_URL + 'media/%s/comments') % (media_id)
+    print 'POST request url : %s' % (request_url)
 
+    make_comment = requests.post(request_url, payload).json()
+
+    if make_comment['meta']['code'] == 200:
+        print "Successfully added a new comment!"
+    else:
+        print "Unable to add comment. Try again!"
 
 
